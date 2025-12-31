@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include <gtk/gtk.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #define WINDOW_WIDTH 400
 #define WINDOW_HEIGHT 600
@@ -24,15 +26,23 @@ typedef struct {
 } ST_POSITION;
 
 typedef struct {
+  Mix_Chunk *play;
+  Mix_Chunk *win;
+} ST_SOUND;
+
+typedef struct {
   ST_POSITION positions[9];
   ST_PLAYERS players;
   PLAYER_TYPE first_player;
   PLAYER_TYPE winner;
   int turn;
+  ST_SOUND sounds;
 } ST_GAME;
 
 static void create_main_window(GtkApplication *app, gpointer data);
 static void initialize_game(ST_GAME *game);
+static void initialize_sound(ST_GAME *game);
+static void play_sound(Mix_Chunk *sound);
 static void create_top_score(GtkWidget *box);
 static void create_display_players(GtkWidget *box);
 static PLAYER_TYPE get_random_first_player();
@@ -50,6 +60,7 @@ int main(int argc, char **argv)
 
   ST_GAME game;
   initialize_game(&game);
+  initialize_sound(&game);
 
   app = gtk_application_new("org.gtk.tictactoe", G_APPLICATION_DEFAULT_FLAGS);
   g_signal_connect(app, "activate", G_CALLBACK(create_main_window), &game);
@@ -58,6 +69,73 @@ int main(int argc, char **argv)
   g_object_unref(app);
 
   return status;
+}
+
+static void initialize_game(ST_GAME *game) {
+  const int32_t positions[9] = {
+   0x80080080,  // Row A  Column 1
+   0x40008000, // Row A  Column 2
+   0x20000808, // Row A  Column 3
+   0x08040000, // Row B  Column 1 
+   0x04004044, // Row B  Column 2
+   0x02000400, // Row B  Column 3
+   0x00820002, // Row C  Column 1
+   0x00402000, // Row C  Column 2
+   0x00200220  // Row C  Column 3
+  };
+
+  for (int i = 0; i < 9; i++) {
+    game->positions[i].position = positions[i];
+    game->positions[i].player = NO_PLAYER;
+  }
+
+  game->players.PlayerX = 0x00000000; 
+  game->players.PlayerO = 0x00000000;
+
+  game->players.wins_x = 0;
+  game->players.wins_o = 0;
+  game->players.draws = 0;
+
+  game->first_player = get_random_first_player();
+
+  game->winner = NO_PLAYER;
+
+  game->turn = 1;
+
+  game->sounds.play = NULL;
+  game->sounds.win = NULL;
+}
+
+static void initialize_sound(ST_GAME *game) {
+  // https://lazyfoo.net/tutorials/SDL/21_sound_effects_and_music/index.php
+
+  // Initialize SDL
+  if(SDL_Init(SDL_INIT_AUDIO) < 0)
+  {
+    printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+    return;
+  }        
+
+  // Initialize SDL_mixer
+  if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0 )
+  {
+    printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+    return;
+  }
+
+  game->sounds.play = Mix_LoadWAV("play.mp3");
+  game->sounds.win = Mix_LoadWAV("win.mp3");
+
+  if(!game->sounds.play || !game->sounds.win){
+    printf("Failed to load sound! SDL_mixer Error: %s\n", Mix_GetError());
+    return;
+  }
+}
+
+static void play_sound(Mix_Chunk *sound) {
+  if(sound){
+    Mix_PlayChannel(-1, sound, 0);
+  }
 }
 
 static void create_main_window(GtkApplication *app, gpointer data){
@@ -93,38 +171,6 @@ static void create_main_window(GtkApplication *app, gpointer data){
   gtk_style_context_add_provider_for_display(gdk_display_get_default(), GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
   gtk_window_present(GTK_WINDOW(window));
-}
-
-static void initialize_game(ST_GAME *game) {
-  const int32_t positions[9] = {
-   0x80080080,  // Row A  Column 1
-   0x40008000, // Row A  Column 2
-   0x20000808, // Row A  Column 3
-   0x08040000, // Row B  Column 1 
-   0x04004044, // Row B  Column 2
-   0x02000400, // Row B  Column 3
-   0x00820002, // Row C  Column 1
-   0x00402000, // Row C  Column 2
-   0x00200220  // Row C  Column 3
-  };
-
-  for (int i = 0; i < 9; i++) {
-    game->positions[i].position = positions[i];
-    game->positions[i].player = NO_PLAYER;
-  }
-
-  game->players.PlayerX = 0x00000000; 
-  game->players.PlayerO = 0x00000000;
-
-  game->players.wins_x = 0;
-  game->players.wins_o = 0;
-  game->players.draws = 0;
-
-  game->first_player = get_random_first_player();
-
-  game->winner = NO_PLAYER;
-
-  game->turn = 1;
 }
 
 static void create_top_score(GtkWidget *box) {
@@ -256,7 +302,7 @@ static PLAYER_TYPE get_player_winner(ST_GAME *game){
     }
   }
 
-  if(game->turn >= 9) {
+  if(game->turn > 9) {
     game->players.draws++; 
   }
 
@@ -299,6 +345,8 @@ static void process_button(GtkButton *button, gpointer data){
   PLAYER_TYPE player = get_player_turn(game);
 
   if(player == PLAYER_O) {
+      play_sound(game->sounds.play);
+
       GtkWidget *image = gtk_image_new_from_file("o_draw.png");
       gtk_widget_set_hexpand(image, true);
       gtk_widget_set_vexpand(image, true);
@@ -308,6 +356,8 @@ static void process_button(GtkButton *button, gpointer data){
       game->positions[index].player = PLAYER_O;    
   }
   else if(player == PLAYER_X) {
+      play_sound(game->sounds.play);
+
       GtkWidget *image = gtk_image_new_from_file("x_draw.png");
       gtk_widget_set_hexpand(image, true);
       gtk_widget_set_vexpand(image, true);
@@ -323,7 +373,8 @@ static void process_button(GtkButton *button, gpointer data){
   game->winner = get_player_winner(game);
   update_display_player(main_box, game);
   
-  if(game->winner != NO_PLAYER || game->turn >= 9) {
+  if(game->winner != NO_PLAYER || game->turn > 9) {     
+    play_sound(game->sounds.win);
     update_top_score(main_box, game);
 
     get_new_game(grid, game);

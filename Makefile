@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = $(shell pkg-config --cflags gtk4) -Wall -Wextra -g
-LIBS = $(shell pkg-config --libs gtk4) 
+LIBS = $(shell pkg-config --libs gtk4 sdl2 SDL2_mixer) 
 
 SRC = main.c
 OBJ = $(SRC:.c=.o)
