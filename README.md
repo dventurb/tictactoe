@@ -1,4 +1,13 @@
-# Tic Tac Toe
+#<div align ="center">
+    <!--LOGO-->
+    <a href="github.com/dventurb/tictactoe">
+    <img src="https://raw.githubusercontent.com/dventurb/tictactoe/refs/heads/main/assets/icon.png" alt="Logo" width="64" height="64">
+</a>
+
+<!--PROJECT NAME-->
+<h1>Tic Tac Toe</h1>
+
+![screenshot](https://i.imgur.com/KM6oCIn.png)
 
 ## CS50
 This was my final project for the **CS50: Introduction to Computer Sciense**, a course offered by Havard University and taught by professor David Malan. The goal of the final project was to apply the knowledge acquired throughout the course from C programming, memory management, algorithms and data structures. The result is a **graphical game written in C**, using GTK4 for the interface and SDL2 for the sound effects.
