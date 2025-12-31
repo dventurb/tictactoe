@@ -122,7 +122,7 @@ All dependencies are automatically installed by the install script (install.sh).
 
 ## Demonstration on youtube
 For the CS50 final project you have to make a video showning your project,
-[My Final Project presentation]()
+[My Final Project presentation](https://www.youtube.com/watch?v=xzVdJ_ptiTQ)
 
 ## Documentation
 https://stackoverflow.com/questions/1056316/algorithm-for-determining-tic-tac-toe-game-over
