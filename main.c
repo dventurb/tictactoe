@@ -123,8 +123,8 @@ static void initialize_sound(ST_GAME *game) {
     return;
   }
 
-  game->sounds.play = Mix_LoadWAV("play.mp3");
-  game->sounds.win = Mix_LoadWAV("win.mp3");
+  game->sounds.play = Mix_LoadWAV("assets/sounds/play.mp3");
+  game->sounds.win = Mix_LoadWAV("assets/sounds/win.mp3");
 
   if(!game->sounds.play || !game->sounds.win){
     printf("Failed to load sound! SDL_mixer Error: %s\n", Mix_GetError());
@@ -166,7 +166,7 @@ static void create_main_window(GtkApplication *app, gpointer data){
   initialize_buttons(grid, game);
 
   GtkCssProvider *provider = gtk_css_provider_new();
-  GFile *css_file = g_file_new_for_path("styles.css");
+  GFile *css_file = g_file_new_for_path("assets/css/styles.css");
   gtk_css_provider_load_from_file(provider, css_file);
   gtk_style_context_add_provider_for_display(gdk_display_get_default(), GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_USER);
 
@@ -347,7 +347,7 @@ static void process_button(GtkButton *button, gpointer data){
   if(player == PLAYER_O) {
       play_sound(game->sounds.play);
 
-      GtkWidget *image = gtk_image_new_from_file("o_draw.png");
+      GtkWidget *image = gtk_image_new_from_file("assets/images/o_draw.png");
       gtk_widget_set_hexpand(image, true);
       gtk_widget_set_vexpand(image, true);
       gtk_box_append(GTK_BOX(box), image);
@@ -358,7 +358,7 @@ static void process_button(GtkButton *button, gpointer data){
   else if(player == PLAYER_X) {
       play_sound(game->sounds.play);
 
-      GtkWidget *image = gtk_image_new_from_file("x_draw.png");
+      GtkWidget *image = gtk_image_new_from_file("assets/images/x_draw.png");
       gtk_widget_set_hexpand(image, true);
       gtk_widget_set_vexpand(image, true);
       gtk_box_append(GTK_BOX(box), image);     
@@ -397,7 +397,7 @@ static void update_top_score(GtkWidget *box, ST_GAME *game) {
     snprintf(buffer, 50, "%d", game->players.wins_o);
 
     gtk_label_set_text(GTK_LABEL(label), buffer);
-  }else if(game->winner == NO_PLAYER && game->turn == 9) {
+  }else if(game->winner == NO_PLAYER && game->turn >= 9) {
     GtkWidget *label = g_object_get_data(G_OBJECT(box), "DRAW-SCORE");
 
     char buffer[50];
