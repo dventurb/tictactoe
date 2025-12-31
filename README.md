@@ -1,4 +1,4 @@
-#<div align ="center">
+<div align ="center">
     <!--LOGO-->
     <a href="github.com/dventurb/tictactoe">
     <img src="https://raw.githubusercontent.com/dventurb/tictactoe/refs/heads/main/assets/icon.png" alt="Logo" width="64" height="64">
