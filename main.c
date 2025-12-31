@@ -1,3 +1,5 @@
+// References: https://stackoverflow.com/questions/1056316/algorithm-for-determining-tic-tac-toe-game-over
+
 #include <stdint.h>
 #include <gtk/gtk.h>
 #include <SDL2/SDL.h>
