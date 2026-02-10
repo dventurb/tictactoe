@@ -108,14 +108,6 @@ This allows the logic of the game run in a few bitwise operations, without itera
 
 This method is extremely fast, memory-efficient and elegant, demonstrating bit manipulation.
 
-## Graphical Interface (GTK) 
-
-The GUI of the game uses GTK4, for manipulationand handles input and signals of the widgets. Demonstrating a good understaning of pointers, memory management and even CSS for the style of the game.
-
-## Sound Effect (SDL2) 
-
-SDL2 is used for sound effects, providing a sound for users move or winning.
-
 ## Installation 
 
 ```bash 
