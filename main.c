@@ -295,9 +295,7 @@ static PLAYER_TYPE get_player_winner(ST_GAME *game){
 
       return PLAYER_O;
     }
-  }
-
-  for(int i = 0; i < 8; i++) {
+    
     if((game->players.PlayerX & WINS[i]) == WINS[i]) {
       game->players.wins_x++;
       return PLAYER_X;
