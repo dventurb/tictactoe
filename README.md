@@ -94,11 +94,11 @@ A player wins if any of the **bits masks** is satisfied:
 
       return PLAYER_O;
     }
-  }
 
-  for(int i = 0; i < 8; i++) {
     if((game->players.PlayerX & WINS[i]) == WINS[i]) {
+      
       game->players.wins_x++;
+      
       return PLAYER_X;
     }
   }
